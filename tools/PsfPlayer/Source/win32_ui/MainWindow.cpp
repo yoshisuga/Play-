@@ -26,7 +26,7 @@
 #define PSF_FILTER _T("PlayStation Sound Files (*.psf; *.minipsf)\0*.psf; *.minipsf\0")
 #define PSF2_FILTER _T("PlayStation2 Sound Files (*.psf2; *.minipsf2)\0*.psf2; *.minipsf2\0")
 #define PSFP_FILTER _T("PlayStation Portable Sound Files (*.psfp; *.minipsfp)\0*.psfp; *.minipsfp\0")
-#define ARCHIVE_FILTER _T("Archived Sound Files (*.zip; *.rar)\0*.zip;*.rar\0")
+#define ARCHIVE_FILTER _T("Archived Sound Files (*.zip; *.rar; *.7z)\0*.zip;*.rar\0")
 
 #define TEXT_PLAY _T("Play")
 #define TEXT_PAUSE _T("Pause")
@@ -886,7 +886,7 @@ void CMainWindow::OnFileOpen()
 {
 	Framework::Win32::CFileDialog dialog;
 	const TCHAR* filter =
-	    _T("All Supported Files\0*.zip; *.rar; *.psf; *.minipsf; *.psf2; *.minipsf2; *.psfp; *.minipsfp;*") PLAYLIST_EXTENSION _T("\0") PLAYLIST_FILTER
+	    _T("All Supported Files\0*.zip; *.rar; *.7z; *.psf; *.minipsf; *.psf2; *.minipsf2; *.psfp; *.minipsfp;*") PLAYLIST_EXTENSION _T("\0") PLAYLIST_FILTER
 	        ARCHIVE_FILTER
 	            PSF_FILTER
 	                PSF2_FILTER
@@ -900,7 +900,11 @@ void CMainWindow::OnFileOpen()
 		{
 			LoadPlaylist(filePath);
 		}
-		else if(!wcsicmp(fileExtension.c_str(), L".rar") || !wcsicmp(fileExtension.c_str(), L".zip"))
+		else if(
+			!wcsicmp(fileExtension.c_str(), L".rar") || 
+			!wcsicmp(fileExtension.c_str(), L".zip") || 
+			!wcsicmp(fileExtension.c_str(), L".7z")
+			)
 		{
 			LoadArchive(filePath);
 		}

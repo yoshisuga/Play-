@@ -13,6 +13,7 @@ set(PSF_PROJECT_NAME "PsfPlayer")
 set(PSF_PROJECT_VERSION "1.05")
 set(PSF_DEFINITIONS)
 set(PSF_RAR_SUPPORT ON)
+set(PSF_7Z_SUPPORT ON)
 
 if(NOT TARGET PlayCore)
 	add_subdirectory(
@@ -44,6 +45,16 @@ if(PSF_RAR_SUPPORT)
 		)
 	endif()
 	list(APPEND PROJECT_LIBS unrar)
+endif()
+
+if(PSF_7Z_SUPPORT)
+	if(NOT TARGET lzmasdk)
+		add_subdirectory(
+			${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/build_cmake/lzmasdk-18.05
+			${CMAKE_CURRENT_BINARY_DIR}/lzmasdk-18.05
+		)
+	endif()
+	list(APPEND PROJECT_LIBS lzmasdk)
 endif()
 
 ##PsfPlayerCore
@@ -80,6 +91,10 @@ set(PSFCORE_SRC_FILES
 if(PSF_RAR_SUPPORT)
 	list(APPEND PSFCORE_SRC_FILES PsfRarArchive.cpp)
 	list(APPEND PSF_DEFINITIONS -DRAR_SUPPORT)
+endif()
+if(PSF_7Z_SUPPORT)
+	list(APPEND PSFCORE_SRC_FILES Psf7zArchive.cpp)
+	list(APPEND PSF_DEFINITIONS -DSZ_SUPPORT)
 endif()
 
 if(TARGET_PLATFORM_MACOS)

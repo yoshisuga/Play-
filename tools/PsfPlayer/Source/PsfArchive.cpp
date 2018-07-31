@@ -3,6 +3,9 @@
 #include "PsfRarArchive.h"
 #endif
 #include "PsfZipArchive.h"
+#ifdef SZ_SUPPORT
+#include "Psf7zArchive.h"
+#endif
 #include "stricmp.h"
 #include "make_unique.h"
 
@@ -18,6 +21,12 @@ CPsfArchive::PsfArchivePtr CPsfArchive::CreateFromPath(const boost::filesystem::
 	else if(!strcmp(extension.c_str(), ".rar"))
 	{
 		result = std::make_unique<CPsfRarArchive>();
+	}
+#endif
+#ifdef SZ_SUPPORT
+	else if(!strcmp(extension.c_str(), ".7z"))
+	{
+		result = std::make_unique<CPsf7zArchive>();
 	}
 #endif
 	else
