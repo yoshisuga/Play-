@@ -67,7 +67,12 @@ private:
 		unsigned int alphaFailResult : 2;
 		unsigned int depthWriteEnabled : 1;
 		unsigned int depthTestMethod : 2;
-		unsigned int padding : 10;
+		unsigned int hasAlphaBlend : 1;
+		unsigned int blendFactorA : 2;
+		unsigned int blendFactorB : 2;
+		unsigned int blendFactorC : 2;
+		unsigned int blendFactorD : 2;
+		unsigned int padding : 1;
 
 		bool isIndexedTextureSource() const
 		{
@@ -135,18 +140,24 @@ private:
 
 	struct FRAGMENTPARAMS
 	{
+		//
 		float textureSize[2];
 		float texelSize[2];
 		float clampMin[2];
 		float clampMax[2];
+		//
 		float texA0;
 		float texA1;
 		uint32 alphaRef;
 		uint32 depthMask;
+		//
 		float fogColor[3];
-		float padding2;
+		uint32 alphaFix;
+		//
+		uint32 colorMask;
+		float padding2[3];
 	};
-	static_assert(sizeof(FRAGMENTPARAMS) == 0x40, "Size of FRAGMENTPARAMS must be 64 bytes.");
+	static_assert(sizeof(FRAGMENTPARAMS) == 0x50, "Size of FRAGMENTPARAMS must be 64 bytes.");
 
 	enum
 	{
@@ -304,6 +315,8 @@ private:
 	Framework::OpenGl::CShader GenerateVertexShader(const SHADERCAPS&);
 	Framework::OpenGl::CShader GenerateFragmentShader(const SHADERCAPS&);
 	std::string GenerateTexCoordClampingSection(TEXTURE_CLAMP_MODE, const char*);
+	std::string GenerateAlphaBlendABDValue(ALPHABLEND_ABD);
+	std::string GenerateAlphaBlendCValue(ALPHABLEND_C);
 	std::string GenerateAlphaTestSection(ALPHA_TEST_METHOD);
 
 	Framework::OpenGl::ProgramPtr GeneratePresentProgram();
@@ -338,6 +351,7 @@ private:
 	static bool CanRegionRepeatClampModeSimplified(uint32, uint32);
 	void FillShaderCapsFromTexture(SHADERCAPS&, const uint64&, const uint64&, const uint64&, const uint64&);
 	void FillShaderCapsFromTestAndZbuf(SHADERCAPS&, const uint64&, const uint64&);
+	void FillShaderCapsFromAlpha(SHADERCAPS&, const uint64&);
 
 	void SetupTexture(uint64, uint64, uint64, uint64, uint64);
 	static uint32 GetFramebufferBitDepth(uint32);

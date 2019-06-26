@@ -79,11 +79,6 @@ Framework::OpenGl::ProgramPtr CGSH_OpenGL::GenerateShader(const SHADERCAPS& caps
 	glBindAttribLocation(*result, static_cast<GLuint>(PRIM_VERTEX_ATTRIB::TEXCOORD), "a_texCoord");
 	glBindAttribLocation(*result, static_cast<GLuint>(PRIM_VERTEX_ATTRIB::FOG), "a_fog");
 
-#ifdef USE_DUALSOURCE_BLENDING
-	glBindFragDataLocationIndexed(*result, 0, 0, "fragColor");
-	glBindFragDataLocationIndexed(*result, 0, 1, "blendColor");
-#endif
-
 	FRAMEWORK_MAYBE_UNUSED bool linkResult = result->Link();
 	assert(linkResult);
 
@@ -185,14 +180,11 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 	}
 
 	shaderBuilder << "out vec4 fragColor;" << std::endl;
-#ifdef USE_DUALSOURCE_BLENDING
-	shaderBuilder << "out vec4 blendColor;" << std::endl;
-#endif
 
 	shaderBuilder << "uniform sampler2D g_texture;" << std::endl;
 	shaderBuilder << "uniform sampler2D g_palette;" << std::endl;
 
-	//shaderBuilder << "uniform layout(rgba8) image2D g_framebuffer;" << std::endl;
+	shaderBuilder << "uniform layout(rgba8) image2D g_framebuffer;" << std::endl;
 	shaderBuilder << "uniform layout(r32ui) uimage2D g_depthbuffer;" << std::endl;
 
 	shaderBuilder << "layout(std140) uniform FragmentParams" << std::endl;
@@ -206,6 +198,8 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 	shaderBuilder << "	uint g_alphaRef;" << std::endl;
 	shaderBuilder << "	uint g_depthMask;" << std::endl;
 	shaderBuilder << "	vec3 g_fogColor;" << std::endl;
+	shaderBuilder << "	uint g_alphaFix;" << std::endl;
+	shaderBuilder << "	uint g_colorMask;" << std::endl;
 	shaderBuilder << "};" << std::endl;
 
 	if(caps.texClampS == TEXTURE_CLAMP_MODE_REGION_REPEAT || caps.texClampT == TEXTURE_CLAMP_MODE_REGION_REPEAT)
@@ -245,6 +239,7 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 
 	shaderBuilder << "	uint depth = uint(v_depth * 4294967296.0);" << std::endl;
 
+	shaderBuilder << "	bool depthTestFail = false;" << std::endl;
 	shaderBuilder << "	bool alphaTestFail = false;" << std::endl;
 
 	shaderBuilder << "	highp vec3 texCoord = v_texCoord;" << std::endl;
@@ -379,14 +374,7 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 		shaderBuilder << "	fragColor.xyz = textureColor.xyz;" << std::endl;
 	}
 
-	//For proper alpha blending, alpha has to be multiplied by 2 (0x80 -> 1.0)
-#ifdef USE_DUALSOURCE_BLENDING
 	shaderBuilder << "	fragColor.a = textureColor.a;" << std::endl;
-	shaderBuilder << "	blendColor.a = clamp(textureColor.a * 2.0, 0.0, 1.0);" << std::endl;
-#else
-	//This has the side effect of not writing a proper value in the framebuffer (should write alpha "as is")
-	shaderBuilder << "	fragColor.a = clamp(textureColor.a * 2.0, 0.0, 1.0);" << std::endl;
-#endif
 
 	switch(orderingMode)
 	{
@@ -401,7 +389,6 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 	shaderBuilder << "	ivec2 coords = ivec2(gl_FragCoord.xy);" << std::endl;
 
 	//Depth test
-	shaderBuilder << "	bool depthTestFail = false;" << std::endl;
 	switch(caps.depthTestMethod)
 	{
 	case DEPTH_TEST_ALWAYS:
@@ -433,6 +420,28 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 		shaderBuilder << "	}" << std::endl;
 	}
 
+	shaderBuilder << "	if(!depthTestFail)" << std::endl;
+	shaderBuilder << "	{" << std::endl;
+
+	shaderBuilder << "		vec4 dstColor = imageLoad(g_framebuffer, coords);" << std::endl;
+
+	if(caps.hasAlphaBlend)
+	{
+		shaderBuilder << "		vec3 colorA = " << GenerateAlphaBlendABDValue(static_cast<ALPHABLEND_ABD>(caps.blendFactorA)) << ";" << std::endl;
+		shaderBuilder << "		vec3 colorB = " << GenerateAlphaBlendABDValue(static_cast<ALPHABLEND_ABD>(caps.blendFactorB)) << ";" << std::endl;
+		shaderBuilder << "		vec3 colorD = " << GenerateAlphaBlendABDValue(static_cast<ALPHABLEND_ABD>(caps.blendFactorD)) << ";" << std::endl;
+		shaderBuilder << "		float alphaC = " << GenerateAlphaBlendCValue(static_cast<ALPHABLEND_C>(caps.blendFactorC)) << ";" << std::endl;
+		shaderBuilder << "		fragColor.xyz = ((colorA - colorB) * alphaC * 2) + colorD;" << std::endl;
+	}
+
+	shaderBuilder << "		if((g_colorMask & 0xFF000000) == 0) fragColor.a = dstColor.a;" << std::endl;
+	shaderBuilder << "		if((g_colorMask & 0x00FF0000) == 0) fragColor.b = dstColor.b;" << std::endl;
+	shaderBuilder << "		if((g_colorMask & 0x0000FF00) == 0) fragColor.g = dstColor.g;" << std::endl;
+	shaderBuilder << "		if((g_colorMask & 0x000000FF) == 0) fragColor.r = dstColor.r;" << std::endl;
+
+	shaderBuilder << "		imageStore(g_framebuffer, coords, fragColor);" << std::endl;
+	shaderBuilder << "	}" << std::endl;
+
 	switch(orderingMode)
 	{
 	case FRAGMENT_SHADER_ORDERING_ARB:
@@ -440,7 +449,7 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 		break;
 	}
 
-	shaderBuilder << "	if(depthTestFail) discard;" << std::endl;
+	shaderBuilder << "	discard;" << std::endl;
 
 	shaderBuilder << "}" << std::endl;
 
@@ -478,6 +487,46 @@ std::string CGSH_OpenGL::GenerateTexCoordClampingSection(TEXTURE_CLAMP_MODE clam
 
 	std::string shaderSource = shaderBuilder.str();
 	return shaderSource;
+}
+
+std::string CGSH_OpenGL::GenerateAlphaBlendABDValue(ALPHABLEND_ABD factor)
+{
+	switch(factor)
+	{
+	case ALPHABLEND_ABD_CS:
+		return "fragColor.xyz";
+		break;
+	case ALPHABLEND_ABD_CD:
+		return "dstColor.xyz";
+		break;
+	case ALPHABLEND_ABD_ZERO:
+		return "vec3(0, 0, 0)";
+		break;
+	case ALPHABLEND_ABD_INVALID:
+		assert(false);
+		return "vec3(0, 0, 0)";
+		break;
+	}
+}
+
+std::string CGSH_OpenGL::GenerateAlphaBlendCValue(ALPHABLEND_C factor)
+{
+	switch(factor)
+	{
+	case ALPHABLEND_C_AS:
+		return "fragColor.a";
+		break;
+	case ALPHABLEND_C_AD:
+		return "dstColor.a";
+		break;
+	case ALPHABLEND_C_FIX:
+		return "float(g_alphaFix) / 255.0";
+		break;
+	case ALPHABLEND_C_INVALID:
+		assert(false);
+		return "0";
+		break;
+	}
 }
 
 std::string CGSH_OpenGL::GenerateAlphaTestSection(ALPHA_TEST_METHOD testMethod)
