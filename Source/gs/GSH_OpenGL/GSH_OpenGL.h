@@ -111,6 +111,8 @@ private:
 		GLuint framebufferHandle;
 		GLuint framebufferTextureHandle;
 		GLuint depthbufferTextureHandle;
+		GLuint textureSwizzleTableHandle;
+		GLuint frameSwizzleTableHandle;
 		GLuint texture0Handle;
 		GLint texture0MinFilter;
 		GLint texture0MagFilter;
@@ -389,6 +391,8 @@ private:
 
 	FramebufferPtr FindFramebuffer(const FRAME&) const;
 	DepthbufferPtr FindDepthbuffer(const ZBUF&, const FRAME&) const;
+	
+	GLuint GetSwizzleTable(uint32) const;
 
 	void DumpTexture(unsigned int, unsigned int, uint32);
 
@@ -460,6 +464,12 @@ private:
 	Framework::OpenGl::CBuffer m_xferParamsBuffer;
 	Framework::OpenGl::CBuffer m_xferBuffer;
 	Framework::OpenGl::CTexture m_memoryTexture;
+
+	Framework::OpenGl::CTexture m_swizzleTexturePSMCT32;
+	Framework::OpenGl::CTexture m_swizzleTexturePSMCT16;
+	Framework::OpenGl::CTexture m_swizzleTexturePSMCT16S;
+	Framework::OpenGl::CTexture m_swizzleTexturePSMT8;
+	Framework::OpenGl::CTexture m_swizzleTexturePSMT4;
 
 	VERTEX m_VtxBuffer[3];
 	int m_nVtxCount;
