@@ -54,8 +54,10 @@ private:
 	enum SHADER_IMAGE_LOCATIONS
 	{
 		SHADER_IMAGE_MEMORY,
-		SHADER_IMAGE_TEXTURE_SWIZZLE = 1,
-		SHADER_IMAGE_XFER_SWIZZLE = 1,
+		SHADER_IMAGE_CLUT,
+		SHADER_IMAGE_TEXTURE_SWIZZLE = 2,
+		SHADER_IMAGE_XFER_SWIZZLE = 2,
+		SHADER_IMAGE_CLUT_SWIZZLE = 2,
 		SHADER_IMAGE_FRAME_SWIZZLE,
 		SHADER_IMAGE_DEPTH_SWIZZLE,
 	};
@@ -83,9 +85,10 @@ private:
 		unsigned int blendFactorD : 2;
 		unsigned int padding1 : 1;
 		unsigned int texPsm : 6;
+		unsigned int texCpsm : 6;
 		unsigned int framePsm : 6;
 		unsigned int depthPsm : 6;
-		unsigned int padding2 : 14;
+		unsigned int padding2 : 8;
 
 		bool isIndexedTextureSource() const
 		{
@@ -173,12 +176,12 @@ private:
 		uint32 colorMask;
 		uint32 textureBufPtr;
 		uint32 textureBufWidth;
-		uint32 frameBufPtr;
+		uint32 textureCsa;
 		//
+		uint32 frameBufPtr;
 		uint32 frameBufWidth;
 		uint32 depthBufPtr;
 		uint32 depthBufWidth;
-		uint32 padding;
 	};
 	static_assert(sizeof(FRAGMENTPARAMS) == 0x60, "Size of FRAGMENTPARAMS must be 96 bytes.");
 
@@ -192,6 +195,13 @@ private:
 		uint32 padding[3];
 	};
 	static_assert(sizeof(XFERPARAMS) == 0x20, "Size of FRAGMENTPARAMS must be 32 bytes.");
+
+	struct CLUTLOADPARAMS
+	{
+		uint32 clutBufPtr;
+		uint32 padding[3];
+	};
+	static_assert(sizeof(CLUTLOADPARAMS) == 0x10, "Size of CLUTLOADPARAMS must be 16 bytes.");
 
 	enum
 	{
@@ -371,6 +381,8 @@ private:
 	Framework::OpenGl::ProgramPtr GenerateXferProgramPSMT4HL();
 	Framework::OpenGl::ProgramPtr GenerateXferProgramPSMT4HH();
 
+	Framework::OpenGl::ProgramPtr GenerateClutLoaderProgram();
+
 	Framework::OpenGl::CVertexArray GeneratePrimVertexArray();
 	Framework::OpenGl::CBuffer GenerateUniformBlockBuffer(size_t);
 
@@ -476,7 +488,12 @@ private:
 	static const uint32 g_xferWorkGroupSize;
 	Framework::OpenGl::CBuffer m_xferParamsBuffer;
 	Framework::OpenGl::CBuffer m_xferBuffer;
+
 	Framework::OpenGl::CTexture m_memoryTexture;
+
+	Framework::OpenGl::ProgramPtr m_clutLoaderProgramIDX8_CSM0_PSMCT32;
+	Framework::OpenGl::CBuffer m_clutLoadParamsBuffer;
+	Framework::OpenGl::CTexture m_clutTexture;
 
 	Framework::OpenGl::CTexture m_swizzleTexturePSMCT32;
 	Framework::OpenGl::CTexture m_swizzleTexturePSMCT16;
