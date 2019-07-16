@@ -16,7 +16,7 @@
 #define NUM_SAMPLES 8
 #define FRAMEBUFFER_HEIGHT 1024
 
-const uint32 CGSH_OpenGL::g_xferWorkGroupSize = 256;
+const uint32 CGSH_OpenGL::g_xferWorkGroupSize = 1024;
 
 // clang-format off
 const GLenum CGSH_OpenGL::g_nativeClampModes[CGSHandler::CLAMP_MODE_MAX] =
@@ -2232,7 +2232,7 @@ void CGSH_OpenGL::ProcessHostToLocalTransfer()
 			break;
 		}
 
-		uint32 workUnits = pixelCount / g_xferWorkGroupSize;
+		uint32 workUnits = (pixelCount + g_xferWorkGroupSize - 1) / g_xferWorkGroupSize;
 
 		///////
 
@@ -2242,6 +2242,7 @@ void CGSH_OpenGL::ProcessHostToLocalTransfer()
 		CHECKGLERROR();
 
 		XFERPARAMS xferParams;
+		xferParams.pixelCount = pixelCount;
 		xferParams.bufAddress = bltBuf.GetDstPtr();
 		xferParams.bufWidth = bltBuf.GetDstWidth();
 		xferParams.rrw = trxReg.nRRW;
