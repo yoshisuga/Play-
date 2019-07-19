@@ -505,6 +505,7 @@ private:
 	Framework::OpenGl::CBuffer m_xferBuffer;
 
 	Framework::OpenGl::CTexture m_memoryTexture;
+	static const uint32 g_numSamples;
 
 	Framework::OpenGl::CBuffer m_clutLoadParamsBuffer;
 	Framework::OpenGl::CTexture m_clutTexture;
