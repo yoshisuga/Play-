@@ -507,7 +507,10 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 	shaderBuilder << "	fragColor.a = textureColor.a;" << std::endl;
 
 	shaderBuilder << "	ivec2 pixelPosition = ivec2(gl_FragCoord.xy);" << std::endl;
-	if(caps.framePsm == PSMCT32 || caps.framePsm == PSMCT24)
+	if(
+		(caps.framePsm == PSMCT32) || (caps.framePsm == PSMCT24) ||
+		(caps.framePsm == PSMZ32) || (caps.framePsm == PSMZ24)
+		)
 	{
 		shaderBuilder << "	uint frameAddress = GetPixelAddress_PSMCT32(g_frameBufPtr, g_frameBufWidth, g_frameSwizzleTable, pixelPosition);" << std::endl;
 	}
@@ -616,7 +619,10 @@ Framework::OpenGl::CShader CGSH_OpenGL::GenerateFragmentShader(const SHADERCAPS&
 	shaderBuilder << colorWriteCondition << std::endl;
 	shaderBuilder << "	{" << std::endl;
 
-	if((caps.framePsm == PSMCT32) || (caps.framePsm == PSMCT24))
+	if(
+		(caps.framePsm == PSMCT32) || (caps.framePsm == PSMCT24) ||
+		(caps.framePsm == PSMZ32) || (caps.framePsm == PSMZ24)
+		)
 	{
 		shaderBuilder << "		uint dstPixel = Memory_Read32MS(frameAddress, gl_SampleID);" << std::endl;
 		shaderBuilder << "		vec4 dstColor = PSM32ToVec4(dstPixel);" << std::endl;
