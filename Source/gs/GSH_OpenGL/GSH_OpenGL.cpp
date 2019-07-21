@@ -1234,6 +1234,7 @@ void CGSH_OpenGL::FillShaderCapsFromTexture(SHADERCAPS& shaderCaps, const uint64
 
 	shaderCaps.texSourceMode = TEXTURE_SOURCE_MODE_STD;
 
+#if 0
 	if((clamp.nWMS > CLAMP_MODE_CLAMP) || (clamp.nWMT > CLAMP_MODE_CLAMP))
 	{
 		unsigned int clampMode[2];
@@ -1247,6 +1248,9 @@ void CGSH_OpenGL::FillShaderCapsFromTexture(SHADERCAPS& shaderCaps, const uint64
 		shaderCaps.texClampS = clampMode[0];
 		shaderCaps.texClampT = clampMode[1];
 	}
+#endif
+	shaderCaps.texClampS = clamp.nWMS;
+	shaderCaps.texClampT = clamp.nWMT;
 
 	//if(CGsPixelFormats::IsPsmIDTEX(tex0.nPsm))
 	{
@@ -1417,6 +1421,7 @@ void CGSH_OpenGL::SetupTexture(uint64 primReg, uint64 tex0Reg, uint64 tex1Reg, u
 		m_renderState.texture0MinFilter = GL_LINEAR;
 	}
 
+#if 0
 	unsigned int clampMin[2] = {0, 0};
 	unsigned int clampMax[2] = {0, 0};
 	float textureScaleRatio[2] = {texInfo.scaleRatioX, texInfo.scaleRatioY};
@@ -1452,6 +1457,7 @@ void CGSH_OpenGL::SetupTexture(uint64 primReg, uint64 tex0Reg, uint64 tex1Reg, u
 			}
 		}
 	}
+#endif
 
 	if(CGsPixelFormats::IsPsmIDTEX(tex0.nPsm) &&
 	   (m_renderState.texture0MinFilter != GL_NEAREST || m_renderState.texture0MagFilter != GL_NEAREST))
@@ -1480,10 +1486,10 @@ void CGSH_OpenGL::SetupTexture(uint64 primReg, uint64 tex0Reg, uint64 tex1Reg, u
 	m_fragmentParams.textureSize[1] = static_cast<float>(tex0.GetHeight());
 	m_fragmentParams.texelSize[0] = 1.0f / static_cast<float>(tex0.GetWidth());
 	m_fragmentParams.texelSize[1] = 1.0f / static_cast<float>(tex0.GetHeight());
-	m_fragmentParams.clampMin[0] = static_cast<float>(clampMin[0]);
-	m_fragmentParams.clampMin[1] = static_cast<float>(clampMin[1]);
-	m_fragmentParams.clampMax[0] = static_cast<float>(clampMax[0]);
-	m_fragmentParams.clampMax[1] = static_cast<float>(clampMax[1]);
+	m_fragmentParams.clampMin[0] = clamp.GetMinU();
+	m_fragmentParams.clampMin[1] = clamp.GetMinV();
+	m_fragmentParams.clampMax[0] = clamp.GetMaxU();
+	m_fragmentParams.clampMax[1] = clamp.GetMaxV();
 	m_fragmentParams.texA0 = static_cast<float>(texA.nTA0) / 255.f;
 	m_fragmentParams.texA1 = static_cast<float>(texA.nTA1) / 255.f;
 	m_fragmentParams.textureBufPtr = tex0.GetBufPtr();
