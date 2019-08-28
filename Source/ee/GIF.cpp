@@ -43,6 +43,7 @@ void CGIF::Reset()
 	m_eop = false;
 	m_qtemp = QTEMP_INIT;
 	m_signalState = SIGNAL_STATE_NONE;
+	m_xferDelay = 0;
 }
 
 void CGIF::LoadState(Framework::CZipArchiveReader& archive)
@@ -413,6 +414,7 @@ uint32 CGIF::ReceiveDMA(uint32 address, uint32 qwc, uint32 unused, bool tagInclu
 		address += 0x10;
 	}
 
+	m_xferDelay = 0x10;
 	address += ProcessMultiplePackets(memory, address, end, CGsPacketMetadata(3));
 	assert(address <= end);
 
@@ -430,6 +432,12 @@ uint32 CGIF::GetRegister(uint32 address)
 			result |= GIF_STAT_M3P;
 			//Indicate that FIFO is full (15 qwords) (needed for GTA: San Andreas)
 			result |= (0x1F << 24);
+		}
+		if(m_xferDelay > 0)
+		{
+			result |= GIF_STAT_OPH;
+			result |= GIF_STAT_APATH3;
+			m_xferDelay--;
 		}
 		break;
 	}

@@ -17,6 +17,7 @@ public:
 	enum
 	{
 		GIF_STAT_M3P = 0x002,
+		GIF_STAT_OPH = 0x200,
 		GIF_STAT_APATH3 = 0xC00,
 	};
 
@@ -88,6 +89,7 @@ private:
 	uint8* m_ram;
 	uint8* m_spr;
 	CGSHandler*& m_gs;
+	int32 m_xferDelay = 0;
 
 	CProfiler::ZoneHandle m_gifProfilerZone = 0;
 };
