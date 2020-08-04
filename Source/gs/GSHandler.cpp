@@ -1070,7 +1070,7 @@ bool CGSHandler::TransferWriteHandlerPSMT8H(const void* pData, uint32 nLength)
 
 void CGSHandler::TransferReadHandlerInvalid(void*, uint32)
 {
-	assert(0);
+	//assert(0);
 }
 
 template <typename Storage>
