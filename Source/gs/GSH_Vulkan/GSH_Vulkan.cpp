@@ -1000,6 +1000,11 @@ void CGSH_Vulkan::WriteRegisterImpl(uint8 registerId, uint64 data)
 		unsigned int newPrimitiveType = static_cast<unsigned int>(data & 0x07);
 		if(newPrimitiveType != m_primitiveType)
 		{
+			if(m_primitiveType == PRIM_LINE)
+			{
+				//Virtua Fighter 2 (and others): Draws lines and uses result as CLUT
+				memset(&m_clutStates, 0, sizeof(m_clutStates));
+			}
 			m_draw->FlushVertices();
 		}
 		m_primitiveType = newPrimitiveType;
