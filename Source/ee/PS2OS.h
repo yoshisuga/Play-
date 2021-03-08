@@ -403,6 +403,8 @@ private:
 	OsVariableWrapper<uint32> m_tlbsExceptionHandler;
 	OsVariableWrapper<uint32> m_sifDmaNextIdx;
 
+	uint32 m_rotateThreadCount;
+
 	uint32* m_sifDmaTimes = nullptr;
 
 	ThreadQueue m_threadSchedule;

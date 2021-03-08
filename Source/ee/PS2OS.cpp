@@ -264,6 +264,7 @@ CPS2OS::~CPS2OS()
 void CPS2OS::Initialize()
 {
 	m_elf = nullptr;
+	m_rotateThreadCount = 0;
 
 	SetVsyncFlagPtrs(0, 0);
 	UpdateTLBEnabledState();
@@ -292,7 +293,8 @@ void CPS2OS::Release()
 bool CPS2OS::IsIdle() const
 {
 	return m_ee.CanGenerateInterrupt() &&
-	       (m_currentThreadId == m_idleThreadId);
+//	       (m_currentThreadId == m_idleThreadId);
+	       ((m_currentThreadId == m_idleThreadId) || (m_rotateThreadCount > 1000));
 }
 
 void CPS2OS::DumpIntcHandlers()
@@ -1106,6 +1108,11 @@ void CPS2OS::ThreadShakeAndBake()
 			assert(nextThreadPair.second->status == THREAD_RUNNING);
 		}
 		ThreadSwitchContext(nextThreadId);
+	}
+
+	if(m_currentThreadId != 2 && m_currentThreadId != 5)
+	{
+		m_rotateThreadCount = 0;
 	}
 }
 
@@ -2113,6 +2120,11 @@ void CPS2OS::sc_ChangeThreadPriority()
 void CPS2OS::sc_RotateThreadReadyQueue()
 {
 	uint32 prio = m_ee.m_State.nGPR[SC_PARAM0].nV[0];
+
+	if(prio == 1)
+	{
+		m_rotateThreadCount++;
+	}
 
 	//Find first of this priority and reinsert if it's the same as the current thread
 	//If it's not the same, the schedule will be rotated when another thread is choosen
