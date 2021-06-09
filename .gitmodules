@@ -10,3 +10,6 @@
 [submodule "deps/Nuanceur"]
 	path = deps/Nuanceur
 	url = https://github.com/jpd002/Nuanceur.git
+[submodule "deps/AltKit"]
+	path = deps/AltKit
+	url = https://github.com/jpd002/AltKit.git
