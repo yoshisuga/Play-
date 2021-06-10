@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH
 )
 include(Header)
 
-project(PlayUI)
+project(PlayUI LANGUAGES C Swift)
 
 set(USE_GSH_VULKAN OFF)
 find_package(Vulkan)
@@ -81,6 +81,7 @@ if(NOT TARGET AltKit)
 		${CMAKE_CURRENT_BINARY_DIR}/AltKit
 	)
 endif()
+list(APPEND PROJECT_LIBS AltKit)
 
 find_library(UIKIT_LIBRARY NAMES UIKit)
 find_library(COREGRAPHICS_LIBRARY NAMES CoreGraphics)
@@ -101,6 +102,7 @@ set(OSX_SOURCES
 	RenderView.mm
 	SettingsListSelectorViewController.mm
 	SettingsViewController.mm
+	SwiftSupport.swift
 	VirtualPadButton.mm
 	VirtualPadItem.mm
 	VirtualPadStick.mm
@@ -151,7 +153,7 @@ endif()
 
 # Add our Executable
 add_executable(Play MACOSX_BUNDLE ${OSX_SOURCES} ${OSX_HEADERS} ${OSX_RES})
-set_target_properties(Play PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-arc")
+target_compile_options(Play PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-x objective-c++ -fobjc-arc>)
 
 # Probably a better way to set the framework link libraries.
 target_link_libraries(Play ${UIKIT_LIBRARY})
