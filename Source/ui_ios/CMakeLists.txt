@@ -102,7 +102,6 @@ set(OSX_SOURCES
 	RenderView.mm
 	SettingsListSelectorViewController.mm
 	SettingsViewController.mm
-	SwiftSupport.swift
 	VirtualPadButton.mm
 	VirtualPadItem.mm
 	VirtualPadStick.mm
