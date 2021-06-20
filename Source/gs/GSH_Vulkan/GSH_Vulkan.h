@@ -6,7 +6,7 @@
 #include "GSH_VulkanContext.h"
 #include "GSH_VulkanFrameCommandBuffer.h"
 #include "GSH_VulkanClutLoad.h"
-#include "GSH_VulkanDraw.h"
+#include "GSH_VulkanDrawMobile.h"
 #include "GSH_VulkanPresent.h"
 #include "GSH_VulkanTransferHost.h"
 #include "GSH_VulkanTransferLocal.h"
