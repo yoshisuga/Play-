@@ -308,6 +308,20 @@ elseif(TARGET_PLATFORM_WIN32)
 	target_include_directories(Play PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/BugTrap)
 	target_link_directories(Play PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/BugTrap)
 	list(APPEND PROJECT_LIBS "BugTrapU-x64.lib")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC" AND CMAKE_BUILD_TYPE MATCHES "Release")
+	   target_compile_options(Play PRIVATE /Zi)
+
+	   # Tell linker to include symbol data
+		set_target_properties(Play PROPERTIES 
+			LINK_FLAGS "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF"
+		)
+
+		# Set file name & location
+		set_target_properties(Play PROPERTIES 
+			COMPILE_PDB_NAME Play
+			COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+		)
+	endif()	
 elseif(TARGET_PLATFORM_UNIX)
 	add_executable(Play ${QT_SOURCES} ${QT_MOC_SRCS} ${QT_RES_SOURCES} ${QT_UI_HEADERS})
 
