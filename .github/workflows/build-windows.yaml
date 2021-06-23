@@ -92,6 +92,11 @@ jobs:
       with:
         name: Play_Windows_${{ matrix.target-platform }}_Installer
         path: installer_win32\*.exe
+    - name: Upload a Build Artifact PDB
+      uses: actions/upload-artifact@v2
+      with:
+        name: Play_Windows_${{ matrix.target-platform }}_PDB
+        path: build\Source\ui_qt\Release\Play.pdb
     - name: Upload a Build Artifact Libretro Core
       uses: actions/upload-artifact@v2
       with:
