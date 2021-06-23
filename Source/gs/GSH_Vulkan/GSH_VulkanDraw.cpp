@@ -1610,7 +1610,7 @@ void CDraw::CreateDrawImage()
 	                                        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_FORMAT_R8G8B8A8_UNORM, DRAW_AREA_SIZE, DRAW_AREA_SIZE);
 
 	m_drawImage.SetLayout(m_context->queue, m_context->commandBufferPool,
-	                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+	                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-	m_drawImageView = m_drawImage.CreateImageView();
+	m_drawImageView = m_drawImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 }
