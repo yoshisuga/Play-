@@ -4,8 +4,19 @@
 #include "QStringUtils.h"
 #include <QtGlobal>
 
+#ifdef _WIN32
+#include "BugTrap.h"
+#include <tchar.h>
+#endif
+
 int main(int argc, char* argv[])
 {
+#ifdef _WIN32
+	BT_SetFlags(BTF_DETAILEDMODE);
+	BT_SetSupportURL(_T("https://purei.org"));
+	BT_InstallSehFilter();
+#endif
+
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif

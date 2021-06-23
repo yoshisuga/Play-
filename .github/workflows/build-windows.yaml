@@ -66,6 +66,10 @@ jobs:
       id: short_hash
       env:
         LONG_HASH: ${{ github.sha }}
+    - name: Install BugTrap
+      run: |
+        curl -L --silent --show-error --output BugTrap.zip https://github.com/bchavez/BugTrap/releases/download/v1.4.9/BugTrap.zip
+        powershell -command "Expand-Archive -Force BugTrap.zip ./deps/BugTrap"
     - name: Generate CMake Project
       run: |
         mkdir build

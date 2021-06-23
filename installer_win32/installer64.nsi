@@ -74,6 +74,7 @@ Section "Play! (required)"
   
   ; Put file there
   File "${BINARY_INPUT_PATH}\Play.exe"
+  File "${BINARY_INPUT_PATH}\BugTrapU-x64.dll"
   File "${BINARY_INPUT_PATH}\Qt5Core.dll"
   File "${BINARY_INPUT_PATH}\Qt5Gui.dll"
   File "${BINARY_INPUT_PATH}\Qt5Widgets.dll"
@@ -128,6 +129,7 @@ Section "Uninstall"
   
   ; Remove files and uninstaller
   Delete $INSTDIR\Play.exe
+  Delete $INSTDIR\BugTrapU-x64.dll
   Delete $INSTDIR\Qt5Core.dll
   Delete $INSTDIR\Qt5Gui.dll
   Delete $INSTDIR\Qt5Widgets.dll

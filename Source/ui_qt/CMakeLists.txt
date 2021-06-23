@@ -305,6 +305,9 @@ elseif(TARGET_PLATFORM_WIN32)
 		win32/InputProviderXInput.h
 	)
 	add_executable(Play WIN32 ${QT_SOURCES} ${QT_MOC_SRCS} ${QT_RES_SOURCES} ${QT_UI_HEADERS})
+	target_include_directories(Play PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/BugTrap)
+	target_link_directories(Play PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/BugTrap)
+	list(APPEND PROJECT_LIBS "BugTrapU-x64.lib")
 elseif(TARGET_PLATFORM_UNIX)
 	add_executable(Play ${QT_SOURCES} ${QT_MOC_SRCS} ${QT_RES_SOURCES} ${QT_UI_HEADERS})
 
@@ -334,5 +337,8 @@ if(TARGET_PLATFORM_WIN32)
 									 --no-translations
 									 --no-compiler-runtime
 									 "$<TARGET_FILE:Play>"
+	)
+	add_custom_command(TARGET Play POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+		${CMAKE_CURRENT_SOURCE_DIR}/../../deps/BugTrap/BugTrapU-x64.dll $<TARGET_FILE_DIR:Play>
 	)
 endif()
