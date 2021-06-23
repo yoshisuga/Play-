@@ -339,6 +339,8 @@ void MainWindow::on_actionBoot_cdrom0_triggered()
 {
 	try
 	{
+		int* i = nullptr;
+		(*i) = 0;
 		BootCDROM();
 	}
 	catch(const std::exception& e)
