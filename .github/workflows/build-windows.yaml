@@ -9,16 +9,12 @@ jobs:
     strategy:
       matrix:
         build-type: ['Visual Studio 16 2019']
-        target-platform: ['x64', 'Win32']
+        target-platform: ['x64']
         include: 
           - target-platform: 'x64'
             arch-type: 'x86_64'
             qt-arch: 'win64_msvc2019_64'
             installer-script: 'installer64.nsi'
-          - target-platform: 'Win32'
-            arch-type: 'x86_32'
-            qt-arch: 'win32_msvc2019'
-            installer-script: 'installer32.nsi'
     runs-on: windows-latest
     steps:
     - name: Cache Qt
