@@ -13,7 +13,7 @@ QSurfaceFormat OpenGLWindow::GetSurfaceFormat()
 #if defined(GLES_COMPATIBILITY)
 	format.setVersion(3, 0);
 #else
-	format.setVersion(3, 2);
+	format.setVersion(3, 1);
 #endif
 	format.setProfile(QSurfaceFormat::CoreProfile);
 	format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
