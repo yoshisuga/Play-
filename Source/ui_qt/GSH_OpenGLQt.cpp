@@ -6,6 +6,8 @@
 #include <QWindow>
 #include <QOpenGLContext>
 
+#include "string_format.h"
+
 #if defined(GLES_COMPATIBILITY)
 #include "GSH_OpenGLQt.h"
 #endif
@@ -36,14 +38,27 @@ void CGSH_OpenGLQt::InitializeImpl()
 	m_context->setFormat(m_renderSurface->format());
 
 	bool succeeded = m_context->create();
+	if(!succeeded)
+	{
+		MessageBoxA(NULL, "Failed to create context.", NULL, 16);
+	}
 	Q_ASSERT(succeeded);
 
 	succeeded = m_context->makeCurrent(m_renderSurface);
+	if(!succeeded)
+	{
+		MessageBoxA(NULL, "Failed to make content current.", NULL, 16);
+	}
 	Q_ASSERT(succeeded);
 
 #ifdef USE_GLEW
 	glewExperimental = GL_TRUE;
 	auto result = glewInit();
+	if(result != GLEW_OK)
+	{
+		auto message = string_format("Failed to init glew: %d", result);
+		MessageBoxA(NULL, message.c_str(), NULL, 16);
+	}
 	Q_ASSERT(result == GLEW_OK);
 #endif
 
