@@ -79,7 +79,7 @@ Framework::Vulkan::CInstance CGSH_Vulkan::CreateInstance(bool useValidationLayer
 	auto appInfo = Framework::Vulkan::ApplicationInfo();
 	appInfo.pApplicationName = "Play!";
 	appInfo.pEngineName = "Play!";
-	appInfo.apiVersion = VK_API_VERSION_1_2;
+	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	instanceCreateInfo.pApplicationInfo = &appInfo;
 	instanceCreateInfo.enabledExtensionCount = extensions.size();
@@ -359,7 +359,7 @@ void CGSH_Vulkan::CreateDevice(VkPhysicalDevice physicalDevice)
 
 	std::vector<const char*> enabledExtensions;
 	enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-	enabledExtensions.push_back(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
+	//enabledExtensions.push_back(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
 
 	std::vector<const char*> enabledLayers;
 
@@ -367,7 +367,7 @@ void CGSH_Vulkan::CreateDevice(VkPhysicalDevice physicalDevice)
 	physicalDeviceFeaturesInvocationInterlock.fragmentShaderPixelInterlock = VK_TRUE;
 
 	auto physicalDeviceFeatures2 = Framework::Vulkan::PhysicalDeviceFeatures2KHR();
-	physicalDeviceFeatures2.pNext = &physicalDeviceFeaturesInvocationInterlock;
+	//physicalDeviceFeatures2.pNext = &physicalDeviceFeaturesInvocationInterlock;
 #ifndef __APPLE__
 	//MoltenVK doesn't report this properly (probably due to mobile devices supporting buffer stores and not image stores)
 	physicalDeviceFeatures2.features.fragmentStoresAndAtomics = VK_TRUE;
