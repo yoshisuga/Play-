@@ -370,23 +370,28 @@ void CGSH_Vulkan::CreateDevice(VkPhysicalDevice physicalDevice)
 	//physicalDeviceFeatures2.pNext = &physicalDeviceFeaturesInvocationInterlock;
 #ifndef __APPLE__
 	//MoltenVK doesn't report this properly (probably due to mobile devices supporting buffer stores and not image stores)
-	physicalDeviceFeatures2.features.fragmentStoresAndAtomics = VK_TRUE;
+//	physicalDeviceFeatures2.features.fragmentStoresAndAtomics = VK_TRUE;
 #endif
-	physicalDeviceFeatures2.features.shaderInt16 = VK_TRUE;
+//	physicalDeviceFeatures2.features.shaderInt16 = VK_TRUE;
 
-	auto physicalDeviceVulkan12features = Framework::Vulkan::PhysicalDeviceVulkan12Features();
-	physicalDeviceVulkan12features.pNext = &physicalDeviceFeatures2;
-	physicalDeviceVulkan12features.shaderInt8 = VK_TRUE;
-	physicalDeviceVulkan12features.storageBuffer8BitAccess = VK_TRUE;
-	physicalDeviceVulkan12features.uniformAndStorageBuffer8BitAccess = VK_TRUE;
+//	auto physicalDeviceVulkan12features = Framework::Vulkan::PhysicalDeviceVulkan12Features();
+//	physicalDeviceVulkan12features.pNext = &physicalDeviceFeatures2;
+//	physicalDeviceVulkan12features.shaderInt8 = VK_TRUE;
+//	physicalDeviceVulkan12features.storageBuffer8BitAccess = VK_TRUE;
+//	physicalDeviceVulkan12features.uniformAndStorageBuffer8BitAccess = VK_TRUE;
 
-	auto physicalDevice16BitStorageFeatures = Framework::Vulkan::PhysicalDevice16BitStorageFeatures();
-	physicalDevice16BitStorageFeatures.pNext = &physicalDeviceVulkan12features;
-	physicalDevice16BitStorageFeatures.storageBuffer16BitAccess = VK_TRUE;
-	physicalDevice16BitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
+//	auto physicalDevice8BitStorageFeatures = Framework::Vulkan::PhysicalDevice8BitStorageFeatures();
+//	physicalDevice8BitStorageFeatures.pNext = &physicalDeviceFeatures2;
+//	physicalDevice8BitStorageFeatures.storageBuffer8BitAccess = VK_TRUE;
+//	physicalDevice8BitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_TRUE;
+
+//	auto physicalDevice16BitStorageFeatures = Framework::Vulkan::PhysicalDevice16BitStorageFeatures();
+//	physicalDevice16BitStorageFeatures.pNext = &physicalDevice8BitStorageFeatures;
+//	physicalDevice16BitStorageFeatures.storageBuffer16BitAccess = VK_TRUE;
+//	physicalDevice16BitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_TRUE;
 
 	auto deviceCreateInfo = Framework::Vulkan::DeviceCreateInfo();
-	deviceCreateInfo.pNext = &physicalDevice16BitStorageFeatures;
+//	deviceCreateInfo.pNext = &physicalDevice16BitStorageFeatures;
 	deviceCreateInfo.flags = 0;
 	deviceCreateInfo.enabledLayerCount = static_cast<uint32>(enabledLayers.size());
 	deviceCreateInfo.ppEnabledLayerNames = enabledLayers.data();
